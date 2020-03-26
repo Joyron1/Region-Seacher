@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Second Test</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+</head>
+<style>
+    .card {
+        width: 490px;
+        height: 200px;
+    }
+
+    .card-img-top {
+        height: 200px;
+        width: 250px;
+    }
+</style>
+
+<body>
+
+    <div class="container p-5">
+
+        <div class="row no-gutters mt-5">
+            <div class="col-10" style="text-align: center;">
+                <h1 class="display-5 text-primary" style="margin-left: 120px;"> Know The World Better </h1>
+            </div>
+        </div>
+
+        <div class="row no-gutters mt-2" style="margin-left: 200px;">
+            <div class="col-4 mr-4 form-group">
+                <input type="text" class="form-control" id="SearchInput" placeholder="Enter country name">
+            </div>
+
+            <div class="col-6">
+                <button type="button" class="btn btn-primary" onclick="SearchOneButton()">Show Country</button>
+                <button type="button" class="btn btn-primary" onclick="SearchAllButton()">Show all Countries
+                    info</button>
+            </div>
+
+        </div>
+
+        <div class="row no-gutters">
+            <div class="div" id="PrintCards"></div>
+        </div>
+    </div>
+
+    <script>
+
+        document.body.style.backgroundImage = "url(img/earth.jpg)"
+
+        var search = "";
+        var GlobalURL = "https://restcountries.eu/rest/v2/";
+
+        SearchOneButton = () => {
+            let Search = document.getElementById("SearchInput").value;
+            let ShowOneUrl = GlobalURL + `name/${Search}`;
+
+            $.ajax({
+                type: 'GET',
+                datatype: 'json',
+                url: ShowOneUrl,
+                success: function (data) {
+                    result = data
+                    PrintHomePage(result);
+                    console.log("data:", result, "Url:", ShowOneUrl)
+                },
+                error: function (error) {
+                    console.log("error : ", error);
+                }
+            }
+            );
+        }
+
+        SearchAllButton = () => {
+            let ShowAllUrl = GlobalURL + "all";
+
+            $.ajax({
+                type: 'GET',
+                datatype: 'json',
+                url: ShowAllUrl,
+                success: function (data) {
+                    result = data
+                    PrintHomePage(result);
+                    console.log("data:", result, "Url:", ShowAllUrl)
+                },
+                error: function (error) {
+                    console.log("error : ", error);
+                }
+            }
+            );
+        }
+
+        PrintHomePage = (result) => {
+            console.log(result)
+            if (result == null) {
+                alert("SOMETHING WENT WRONG");
+                return;
+            }
+            printCountriesToHTML(result);
+        }
+
+        printCountriesToHTML = (res) => {
+            let str = ``;
+            let result = res;
+            console.log(result)
+
+            str += `<div class="row">`;
+            for (i = 0; i < result.length; i++) {
+                let currency = result[i].currencies[0];
+                console.log(`currency:`, currency)
+                str += `<div class="card my-5 ml-3 row no-gutters">
+                                <div class="col-7">
+                                    <img src="${result[i]['flag']}" class="card-img-top" alt="...">
+                                </div>
+                                <div class="col-5 card-body" style="font-size:12px;">
+                                    <div class="card-title"><b> ${result[i]['name']}</b></div>
+                                    <div class="card-title"><u>Top Level Domain:</u> ${result[i]['topLevelDomain']}</div>
+                                    <div class="card-title"><u>Capital:</u> ${result[i]['capital']}</div>
+                                    <div class="card-title"><u>Currencies:</u> Code: ${currency.code},<br> Name: ${currency.name}, Symbol: ${currency.symbol}</div>
+                                </div>
+                        </div>`;
+
+            }
+            str += `</div>`;
+            PrintCards.innerHTML = str;
+            console.log("Countries : ", result);
+        }
+
+
+
+
+
+    </script>
+</body>
+
+</html>
